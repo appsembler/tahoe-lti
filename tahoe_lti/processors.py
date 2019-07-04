@@ -118,3 +118,15 @@ team_info.lti_xblock_default_params = {
     'custom_team_name': '',
     'custom_team_id': '',
 }
+
+
+def window_document_target(xblock):
+    """
+    Force the correct Window/IFrame behaviour for LIT Providers who need it like SCORMCloud.
+    """
+    return {}
+
+
+window_document_target.lti_xblock_default_params = {
+    'launch_presentation_document_target': 'window',
+}
