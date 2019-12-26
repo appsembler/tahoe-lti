@@ -1,9 +1,16 @@
 language: python
 python:
-  - "2.7"
-
+- '2.7'
 install:
-  - pip install tox
-
+- pip install tox
 script:
-  - tox
+- tox
+deploy:
+  provider: pypi
+  user: "__token__"
+  password:
+    secure: BdzSm66xC7rjailzfQZD1YoYTFmCB0gpVnZ6PPWGY1C7jIEjQjX1FLPH1AS5jjHbdPJURe/P1GlI12W2SERXBW8XUL+fd7cVMkUS9kZX6tFnFCQ4CHgIU9ygl+GH3vuv/I0XslZ0jC9fDUea37z3TehEZ9vfxPYPNj7NO5F0Z3L6A/eHXEkay+RB6+g3FgtWArxiw6UADDNPktdIQafR+NSEmQrAlF4DlS0Qn1npPLzvQXnhYnsJDxJkohn+LKwQm3ziUfFztH82nzVIzfiCx/bfhic/x3W9mdWcPOxzOVWjy3UGZ+z+AFvqdDINwWMlDV133N8SB8jgJwYNi85t0ovPssnE4YDlKW6Mydg36J7rVZ/LnB2FLkTQlfXKGnaY1Fwfd32M6/uHMf1BWs+0AdNYqC3WgVfO5zpjq6/fkOM5WzBXcGbZX36Gt+MK0am/+E/PPm9FFNqD+BE7q1LLWuw/BRAnC/qCO79RBuzKati1y226JuxOpXt6HpqE/xNTUs7UgddLu8KJEhPHHMBfnE+GCWn7xmj/jYGLNiiZTLj9eYlQ3AXN+Gn6nwAJKQpmo0XxMC81Pv8H4McSDnIP6wJH/4d05ppDlKdR0E6qcRrDMY/S/Te/xQIOYRXAstQZJgA1iv/s4v+KMhKIVqhhOn+0kdTjzVhKH3RRNxVmZhY=
+  on:
+    tags: true
+  distributions: "sdist bdist_wheel"
+  skip_existing: true
