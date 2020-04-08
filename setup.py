@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='tahoe-lti',
-    version='0.1.0',
+    version='0.2.0',
     description='Tahoe LTI Customizations package.',
     packages=[
         'tahoe_lti',
