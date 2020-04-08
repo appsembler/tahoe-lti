@@ -1,6 +1,7 @@
 """
 Common LTI processors for Tahoe.
 """
+from xblock_helpers import get_xblock_user
 
 
 def basic_user_info(xblock):
@@ -13,24 +14,23 @@ def basic_user_info(xblock):
 
     Legal Notice: The consent should be covered by the Privacy Policy of the site.
     """
-    if not callable(xblock.runtime.get_real_user):
-        return
+    user = get_xblock_user(xblock)
 
-    user = xblock.runtime.get_real_user(xblock.runtime.anonymous_student_id)
-    return {
-        'lis_person_sourcedid': user.username,
-        'lis_person_contact_email_primary': user.email,
-    }
+    if user:
+        return {
+            'lis_person_sourcedid': user.username,
+            'lis_person_contact_email_primary': user.email,
+        }
 
 
 def personal_user_info(xblock):
     """
     Provide additional standard LTI user personal information.
     """
-    if not callable(xblock.runtime.get_real_user):
+    user = get_xblock_user(xblock)
+    if not user:
         return
 
-    user = xblock.runtime.get_real_user(xblock.runtime.anonymous_student_id)
     user_full_name = user.profile.name
     names_list = user_full_name.split(' ', 1)
 
@@ -63,12 +63,11 @@ def cohort_info(xblock):
     except ImportError:
         return
 
-    if not callable(xblock.runtime.get_real_user):
+    user = get_xblock_user(xblock)
+    if not user:
         return
 
-    user = xblock.runtime.get_real_user(xblock.runtime.anonymous_student_id)
     cohort = cohorts.get_cohort(course_key=xblock.course.id, user=user)
-
     if cohort and cohort.name:
         return {
             'custom_cohort_name': cohort.name,
@@ -88,17 +87,18 @@ def team_info(xblock):
     """
     from django.conf import settings
     features = getattr(settings, 'FEATURES', {})
+    user = get_xblock_user(xblock)
 
-    if not features.get('ENABLE_TEAMS'):
+    if not features.get('ENABLE_TEAMS'):  # Ensure the feature is enabled.
+        return
+    if not user:  # User should be logged in
+        return
+    if getattr(xblock.runtime, 'is_author_mode', False):  # Ensure we're in the LMS.
         return
 
     # No need for handling ImportError, since `ENABLE_TEAMS` is set to True.
     from lms.djangoapps.teams.models import CourseTeamMembership
 
-    if not callable(xblock.runtime.get_real_user):
-        return
-
-    user = xblock.runtime.get_real_user(xblock.runtime.anonymous_student_id)
     try:
         membership = CourseTeamMembership.objects.get(
             user=user,
