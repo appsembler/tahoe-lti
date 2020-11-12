@@ -12,7 +12,7 @@ Install the pip package:
 $ pip install git+https://github.com/appsembler/tahoe-lti.git
 ```
 
-Add the following settings to your `server-vars.yml` (or whatever method you configure your Open edX installation):
+For `Juniper` Add the following settings to your `lms.yml`:
 
 ```yaml
 EDXAPP_XBLOCK_SETTINGS:
@@ -22,6 +22,22 @@ EDXAPP_XBLOCK_SETTINGS:
       - 'tahoe_lti.processors:personal_user_info'
       - 'tahoe_lti.processors:cohort_info'
       - 'tahoe_lti.processors:team_info'
+```
+
+
+For `ironwood` Add the following settings to your `lms.env.json`:
+
+```yaml
+"XBLOCK_SETTINGS" : {
+    "lti_consumer": {
+        "parameter_processors": [
+            "tahoe_lti.processors:basic_user_info",
+            "tahoe_lti.processors:personal_user_info",
+            "tahoe_lti.processors:cohort_info",
+            "tahoe_lti.processors:team_info"
+        ]
+    }
+}
 ```
 
 **Legal Notice:** Both ``basic_user_info`` and ``personal_user_info`` sends personal user information to potential 3rd-party LTI providers.

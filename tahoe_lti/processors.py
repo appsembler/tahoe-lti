@@ -1,7 +1,7 @@
 """
 Common LTI processors for Tahoe.
 """
-from xblock_helpers import get_xblock_user
+from tahoe_lti.xblock_helpers import get_xblock_user
 
 
 def basic_user_info(xblock):
