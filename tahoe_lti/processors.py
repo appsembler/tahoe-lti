@@ -1,7 +1,7 @@
 """
 Common LTI processors for Tahoe.
 """
-from xblock_helpers import get_xblock_user
+from .xblock_helpers import get_xblock_user
 
 
 def basic_user_info(xblock):
@@ -37,7 +37,7 @@ def personal_user_info(xblock):
     params = {
         'lis_person_name_full': user_full_name,
         'lis_person_name_given': names_list[0],
-        'custom_user_id': unicode(user.id or ''),  # noqa: F821
+        'custom_user_id': str(user.id or ''),  # noqa: F821
     }
 
     if len(names_list) > 1:
@@ -71,7 +71,7 @@ def cohort_info(xblock):
     if cohort and cohort.name:
         return {
             'custom_cohort_name': cohort.name,
-            'custom_cohort_id': unicode(cohort.pk),  # noqa: F821
+            'custom_cohort_id': str(cohort.pk),  # noqa: F821
         }
 
 
@@ -109,7 +109,7 @@ def team_info(xblock):
 
     return {
         'custom_team_name': membership.team.name,
-        'custom_team_id': unicode(membership.team.team_id),  # noqa: F821
+        'custom_team_id': str(membership.team.team_id),  # noqa: F821
     }
 
 
