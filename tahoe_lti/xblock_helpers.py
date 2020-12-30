@@ -19,6 +19,7 @@ def get_xblock_user(xblock):
         return
 
     try:
-        return user_model.objects.get(pk=user_id)
-    except user_model.DoesNotExist:
+        return User.objects.get(pk=user_id)
+    except User.DoesNotExist:
+        # TODO: This is an error and an exception should be logged
         pass
