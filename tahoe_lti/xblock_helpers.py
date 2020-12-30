@@ -2,6 +2,9 @@
 Helpers to access the XBlock Runtime modules.
 """
 
+from django.contrib.auth import get_user_model
+User = get_user_model()
+
 
 def get_xblock_user(xblock):
     """
@@ -10,9 +13,6 @@ def get_xblock_user(xblock):
     :param xblock: XBlock instance.
     :return: User or None.
     """
-    from django.contrib.auth import get_user_model
-    user_model = get_user_model()
-
     try:
         user_id = xblock.runtime.user_id
     except AttributeError:

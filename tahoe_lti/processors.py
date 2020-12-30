@@ -1,6 +1,9 @@
 """
 Common LTI processors for Tahoe.
 """
+
+from django.conf import settings
+
 from .xblock_helpers import get_xblock_user
 
 
@@ -58,10 +61,7 @@ def cohort_info(xblock):
     """
     Provide the course cohort information for the current user.
     """
-    try:
-        from openedx.core.djangoapps.course_groups import cohorts
-    except ImportError:
-        return
+    from .openedx import cohorts
 
     user = get_xblock_user(xblock)
     if not user:
@@ -85,7 +85,6 @@ def team_info(xblock):
     """
     Provide the team information for the current user.
     """
-    from django.conf import settings
     features = getattr(settings, 'FEATURES', {})
     user = get_xblock_user(xblock)
 
@@ -96,8 +95,7 @@ def team_info(xblock):
     if getattr(xblock.runtime, 'is_author_mode', False):  # Ensure we're in the LMS.
         return
 
-    # No need for handling ImportError, since `ENABLE_TEAMS` is set to True.
-    from lms.djangoapps.teams.models import CourseTeamMembership
+    from .openedx import CourseTeamMembership
 
     try:
         membership = CourseTeamMembership.objects.get(
