@@ -111,7 +111,7 @@ def team_info(xblock):
         for membership in memberships
     ], sort_keys=True)
 
-    first_membership = memberships[0]  # Support legacy single team per user in Hawthorn and releases
+    first_membership = memberships[0]  # Support legacy single team per user in Hawthorn
     return {
         'custom_team_name': first_membership.team.name,
         'custom_team_id': str(first_membership.team.team_id),
