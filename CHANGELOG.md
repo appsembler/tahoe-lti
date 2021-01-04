@@ -7,11 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- added CHANGELOG
-- Python 3.5 and Django 2 support for Juniper with tests
-- Support for multiple teams
 ### Changed
 ### Removed
+
+## [0.3.0] - 2021-01-04
+### Added
+- added CHANGELOG
+- Support for multiple teams
+- Python 3.5 and Django 2 support for Juniper with tests
+
 
 ## [0.2.0] - 2020-04-08
 
