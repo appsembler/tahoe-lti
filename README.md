@@ -55,3 +55,4 @@ You can use whatever workflow you prefer when developing XBlocks, if you don't h
  - Install this repo in edit mode `$ pip install -e tahoe-lti`
  - Go to In the XBlock SDK and add a `private.py` settings file with the settings above to enable the processors
  - Run the XBlock SDK and choose the `LTI Consumer XBlock` scenario
+
