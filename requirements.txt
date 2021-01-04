@@ -1,0 +1,8 @@
+edx-opaque-keys==2.1.1
+django-pyfs==2.2
+mock==3.0.5
+pytest==6.1.2
+pytest-cov==2.10.1
+pytest-django==4.1.0
+XBlock==1.4.0
+xblock-sdk==0.2.2
