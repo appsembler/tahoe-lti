@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - added CHANGELOG
+- Python 3.5 and Django 2 support for Juniper with tests
+- Support for multiple teams
 ### Changed
 ### Removed
 
