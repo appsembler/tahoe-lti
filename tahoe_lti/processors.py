@@ -1,6 +1,10 @@
 """
 Common LTI processors for Tahoe.
 """
+
+import json
+from django.conf import settings
+
 from .xblock_helpers import get_xblock_user
 
 
@@ -58,10 +62,7 @@ def cohort_info(xblock):
     """
     Provide the course cohort information for the current user.
     """
-    try:
-        from openedx.core.djangoapps.course_groups import cohorts
-    except ImportError:
-        return
+    from .openedx_modules import cohorts
 
     user = get_xblock_user(xblock)
     if not user:
@@ -85,7 +86,6 @@ def team_info(xblock):
     """
     Provide the team information for the current user.
     """
-    from django.conf import settings
     features = getattr(settings, 'FEATURES', {})
     user = get_xblock_user(xblock)
 
@@ -96,26 +96,33 @@ def team_info(xblock):
     if getattr(xblock.runtime, 'is_author_mode', False):  # Ensure we're in the LMS.
         return
 
-    # No need for handling ImportError, since `ENABLE_TEAMS` is set to True.
-    from lms.djangoapps.teams.models import CourseTeamMembership
+    from .openedx_modules import CourseTeamMembership
 
-    try:
-        membership = CourseTeamMembership.objects.get(
-            user=user,
-            team__course_id=xblock.course.id,
-        )
-    except CourseTeamMembership.DoesNotExist:
+    memberships = CourseTeamMembership.objects.filter(
+        user=user,
+        team__course_id=xblock.course.id,
+    )
+
+    if not memberships:
         return
 
+    teams_json = json.dumps([
+        {'id': str(membership.team.team_id), 'name': membership.team.name}
+        for membership in memberships
+    ], sort_keys=True)
+
+    first_membership = memberships[0]  # Support legacy single team per user in Hawthorn
     return {
-        'custom_team_name': membership.team.name,
-        'custom_team_id': str(membership.team.team_id),
+        'custom_team_name': first_membership.team.name,
+        'custom_team_id': str(first_membership.team.team_id),
+        'custom_teams': teams_json,
     }
 
 
 team_info.lti_xblock_default_params = {
     'custom_team_name': '',
     'custom_team_id': '',
+    'custom_teams': '[]',
 }
 
 

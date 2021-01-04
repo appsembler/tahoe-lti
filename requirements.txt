@@ -1,0 +1,19 @@
+edx-opaque-keys==2.1.1
+django-pyfs==2.2
+mock==3.0.5
+
+pytest==4.6.11; python_version < '3'
+pytest==6.1.2; python_version >= '3'
+
+pytest-cov==2.10.1
+
+Django>=1.11,<2; python_version < '3'
+Django>=2.2,<2.3; python_version >= '3'
+
+pytest-django==3.10.0; python_version < '3'
+pytest-django==4.1.0; python_version >= '3'
+
+XBlock==1.2.1; python_version < '3'
+XBlock==1.4.0; python_version >= '3'
+
+xblock-sdk==0.2.2

@@ -1,10 +1,12 @@
 language: python
 python:
 - '2.7'
+- '3.5'
+- '3.8'
 install:
 - pip install tox
 script:
-- tox
+- tox -e flake8,py
 deploy:
   provider: pypi
   user: "__token__"
