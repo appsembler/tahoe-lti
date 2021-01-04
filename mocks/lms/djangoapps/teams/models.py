@@ -5,7 +5,6 @@ Mocks for the Open edX lms.djangoapps.teams.models module.
 from mock import Mock
 from opaque_keys.edx.keys import CourseKey
 
-from django.core.exceptions import ObjectDoesNotExist
 
 CourseTeamMembership = Mock()
 
@@ -26,4 +25,3 @@ def course_team_membership_objects_filter(user, team__course_id):
 
 
 CourseTeamMembership.objects.filter = course_team_membership_objects_filter
-CourseTeamMembership.DoesNotExist = ObjectDoesNotExist

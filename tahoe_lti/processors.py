@@ -2,6 +2,7 @@
 Common LTI processors for Tahoe.
 """
 
+import json
 from django.conf import settings
 
 from .xblock_helpers import get_xblock_user
@@ -97,22 +98,26 @@ def team_info(xblock):
 
     from .openedx_modules import CourseTeamMembership
 
-    try:
-        memberships = CourseTeamMembership.objects.filter(
-            user=user,
-            team__course_id=xblock.course.id,
-        )
-    except CourseTeamMembership.DoesNotExist:
+    memberships = CourseTeamMembership.objects.filter(
+        user=user,
+        team__course_id=xblock.course.id,
+    )
+
+    if not memberships:
         return
 
-    params = {}
-    if len(memberships):
-        # Support legacy single team per user in Hawthorn and older Open edX releases
-        first_membership = memberships[0]
-        params['custom_team_name'] = first_membership.team.name
-        params['custom_team_id'] = str(first_membership.team.team_id)
+    teams_json = json.dumps([
+        {'id': str(membership.team.team_id), 'name': membership.team.name}
+        for membership in memberships
+    ], sort_keys=True)
 
-    return params
+    first_membership = memberships[0]  # Support legacy single team per user in Hawthorn and releases
+    return {
+        'custom_team_name': first_membership.team.name,
+        'custom_team_id': str(first_membership.team.team_id),
+        'custom_teams': teams_json,
+    }
+
 
 team_info.lti_xblock_default_params = {
     'custom_team_name': '',

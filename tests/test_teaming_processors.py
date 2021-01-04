@@ -25,16 +25,18 @@ def test_team_info(mock_get_xblock_user, settings):
     xblock.course.id = CourseKey.from_string('course-v1:Demo+DemoCourse+2021')
     xblock.runtime.is_author_mode = False  # behave as LMS
 
+    membership = Mock()
+    membership.team.team_id = 30
+    membership.team.name = 'A* Team'
+
     with patch('lms.djangoapps.teams.models.mock_filter_membership') as mock_filter_membership:
-        membership = Mock()
-        membership.team.team_id = 30
-        membership.team.name = 'A* Team'
         mock_filter_membership.return_value = [membership]
         info = team_info(xblock=xblock)
 
     assert info == {
         'custom_team_name': 'A* Team',
         'custom_team_id': '30',
+        'custom_teams': '[{"id": "30", "name": "A* Team"}]',
     }
 
 
@@ -57,23 +59,31 @@ def test_team_info_not_found(mock_get_xblock_user, settings):
     assert not info, 'team_info() should return None'
 
 
-# @patch('tahoe_lti.processors.get_xblock_user')
-# def test_team_info_multiple_teams(mock_get_xblock_user, settings):
-#     """Test team_info for multiple_teams"""
-#     settings.FEATURES = {'ENABLE_TEAMS': True}
-#     mock_get_xblock_user.return_value = Mock(
-#         username='mock_username',
-#         email='mock_email@example.com',
-#     )
-#     xblock = Mock()
-#     xblock.course.id = CourseKey.from_string('course-v1:Demo+DemoCourse+2021')
-#     xblock.runtime.is_author_mode = False  # behave as LMS
-#
-#     with patch('lms.djangoapps.teams.models.mock_filter_membership') as mock_filter_membership:
-#         mock_filter_membership.side_effect = ObjectDoesNotExist('Act as there is no membership')
-#         info = team_info(xblock=xblock)
-#
-#     assert not info, 'team_info() should return None'
+@patch('tahoe_lti.processors.get_xblock_user')
+def test_team_info_multiple_teams(mock_get_xblock_user, settings):
+    """Test team_info for multiple_teams"""
+    settings.FEATURES = {'ENABLE_TEAMS': True}
+    mock_get_xblock_user.return_value = Mock(
+        username='mock_username',
+        email='mock_email@example.com',
+    )
+    xblock = Mock()
+    xblock.course.id = CourseKey.from_string('course-v1:Demo+DemoCourse+2021')
+    xblock.runtime.is_author_mode = False  # behave as LMS
+
+    membership1 = Mock()
+    membership1.team.team_id = 'orange_team_065e0'
+    membership1.team.name = 'Orange Team'
+    membership2 = Mock()
+    membership2.team.team_id = 'red_team_h1ef8'
+    membership2.team.name = 'Red Team'
+
+    with patch('lms.djangoapps.teams.models.mock_filter_membership') as mock_filter_membership:
+        mock_filter_membership.return_value = [membership1, membership2]
+        info = team_info(xblock=xblock)
+
+    teams_json = '[{"id": "orange_team_065e0", "name": "Orange Team"}, {"id": "red_team_h1ef8", "name": "Red Team"}]'
+    assert info['custom_teams'] == teams_json, 'team_info() should serialize the teams in an a JSON array'
 
 
 @patch('tahoe_lti.processors.get_xblock_user')
