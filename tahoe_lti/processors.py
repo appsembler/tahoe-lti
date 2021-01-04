@@ -61,7 +61,7 @@ def cohort_info(xblock):
     """
     Provide the course cohort information for the current user.
     """
-    from .openedx import cohorts
+    from .openedx_modules import cohorts
 
     user = get_xblock_user(xblock)
     if not user:
@@ -95,7 +95,7 @@ def team_info(xblock):
     if getattr(xblock.runtime, 'is_author_mode', False):  # Ensure we're in the LMS.
         return
 
-    from .openedx import CourseTeamMembership
+    from .openedx_modules import CourseTeamMembership
 
     try:
         membership = CourseTeamMembership.objects.get(

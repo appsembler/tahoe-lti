@@ -5,7 +5,7 @@ python:
 install:
 - pip install tox
 script:
-- tox -e flake8,py35-django22
+- tox -e flake8,py35
 deploy:
   provider: pypi
   user: "__token__"
