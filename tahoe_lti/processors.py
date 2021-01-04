@@ -98,22 +98,26 @@ def team_info(xblock):
     from .openedx_modules import CourseTeamMembership
 
     try:
-        membership = CourseTeamMembership.objects.get(
+        memberships = CourseTeamMembership.objects.filter(
             user=user,
             team__course_id=xblock.course.id,
         )
     except CourseTeamMembership.DoesNotExist:
         return
 
-    return {
-        'custom_team_name': membership.team.name,
-        'custom_team_id': str(membership.team.team_id),
-    }
+    params = {}
+    if len(memberships):
+        # Support legacy single team per user in Hawthorn and older Open edX releases
+        first_membership = memberships[0]
+        params['custom_team_name'] = first_membership.team.name
+        params['custom_team_id'] = str(first_membership.team.team_id)
 
+    return params
 
 team_info.lti_xblock_default_params = {
     'custom_team_name': '',
     'custom_team_id': '',
+    'custom_teams': '[]',
 }
 
 
