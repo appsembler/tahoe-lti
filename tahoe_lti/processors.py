@@ -45,7 +45,6 @@ class PersonalUserInfoProcessor(object):
             date_joined=date_joined
         ).encode())
 
-
         return user_hash.hexdigest()
 
     def personal_user_info(self, xblock):
@@ -60,7 +59,6 @@ class PersonalUserInfoProcessor(object):
             user_id = self.__get_combined_user_email(user)
         else:
             user_id = str(user.id)
-
 
         user_full_name = user.profile.name
         names_list = user_full_name.split(' ', 1)
@@ -182,28 +180,3 @@ def window_document_target(xblock):
 window_document_target.lti_xblock_default_params = {
     'launch_presentation_document_target': 'window',
 }
-
-
-def combined_user_email_as_custom_user_id(user):
-    """
-    Compose a user identification string from user email and join date.
-
-    In rare cases `user.id` cannot be used with LTI providers when the user id
-    already exists on the provider side. To support scenarios like this, it is
-    needed to have another way to generate a user identification string that
-    is unique per user per installation.
-
-    To provide a per-instance unique string for the user, we return the hashed
-    combination of the user's email and registration date.
-    """
-
-    date_joined = str(user.date_joined.timestamp())
-
-    user_hash = hashlib.sha1("{user_email}-{date_joined}".format(
-        user_email=user.email,
-        date_joined=date_joined
-    ).encode())
-
-
-
-    return user_hash.hexdigest()
