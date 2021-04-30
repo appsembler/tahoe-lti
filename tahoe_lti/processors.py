@@ -3,9 +3,86 @@ Common LTI processors for Tahoe.
 """
 
 import json
+import hashlib
 from django.conf import settings
 
 from .xblock_helpers import get_xblock_user
+
+
+class PersonalUserInfoProcessor(object):
+    """
+    Provide additional standard LTI user personal information.
+    """
+
+    DEFAULT_PARAMS = {
+        'lis_person_name_full': '',
+        'lis_person_name_given': '',
+        'lis_person_name_family': '',
+        'custom_user_id': '',
+    }
+
+    def __init__(self, use_combined_email_as_id=False):
+        super(PersonalUserInfoProcessor, self).__init__()
+        self.use_combined_email_as_id = use_combined_email_as_id
+
+    def __get_combined_user_email(self, user):
+        """
+        Compose a user identification string from user email and join date.
+
+        In rare cases `user.id` cannot be used with LTI providers when the user id
+        already exists on the provider side. To support scenarios like this, it is
+        needed to have another way to generate a user identification string that
+        is unique per user per installation.
+
+        To provide a per-instance unique string for the user, we return the hashed
+        combination of the user's email and registration date.
+        """
+
+        date_joined = str(user.date_joined.timestamp())
+
+        user_hash = hashlib.sha1("{user_email}-{date_joined}".format(
+            user_email=user.email,
+            date_joined=date_joined
+        ).encode())
+
+
+        return user_hash.hexdigest()
+
+    def personal_user_info(self, xblock):
+        """
+        Provide additional standard LTI user personal information.
+        """
+        user = get_xblock_user(xblock)
+        if not user:
+            return
+
+        if self.use_combined_email_as_id:
+            user_id = self.__get_combined_user_email(user)
+        else:
+            user_id = str(user.id)
+
+
+        user_full_name = user.profile.name
+        names_list = user_full_name.split(' ', 1)
+
+        params = {
+            'lis_person_name_full': user_full_name,
+            'lis_person_name_given': names_list[0],
+            'custom_user_id': user_id,
+        }
+
+        if len(names_list) > 1:
+            params['lis_person_name_family'] = names_list[1]
+
+        return params
+
+    personal_user_info.lti_xblock_default_params = DEFAULT_PARAMS
+
+
+personal_user_info = PersonalUserInfoProcessor().personal_user_info
+combined_email_based_personal_user_info = PersonalUserInfoProcessor(
+    use_combined_email_as_id=True
+).personal_user_info
 
 
 def basic_user_info(xblock):
@@ -25,37 +102,6 @@ def basic_user_info(xblock):
             'lis_person_sourcedid': user.username,
             'lis_person_contact_email_primary': user.email,
         }
-
-
-def personal_user_info(xblock):
-    """
-    Provide additional standard LTI user personal information.
-    """
-    user = get_xblock_user(xblock)
-    if not user:
-        return
-
-    user_full_name = user.profile.name
-    names_list = user_full_name.split(' ', 1)
-
-    params = {
-        'lis_person_name_full': user_full_name,
-        'lis_person_name_given': names_list[0],
-        'custom_user_id': str(user.id or ''),
-    }
-
-    if len(names_list) > 1:
-        params['lis_person_name_family'] = names_list[1]
-
-    return params
-
-
-personal_user_info.lti_xblock_default_params = {
-    'lis_person_name_full': '',
-    'lis_person_name_given': '',
-    'lis_person_name_family': '',
-    'custom_user_id': '',
-}
 
 
 def cohort_info(xblock):
@@ -136,3 +182,28 @@ def window_document_target(xblock):
 window_document_target.lti_xblock_default_params = {
     'launch_presentation_document_target': 'window',
 }
+
+
+def combined_user_email_as_custom_user_id(user):
+    """
+    Compose a user identification string from user email and join date.
+
+    In rare cases `user.id` cannot be used with LTI providers when the user id
+    already exists on the provider side. To support scenarios like this, it is
+    needed to have another way to generate a user identification string that
+    is unique per user per installation.
+
+    To provide a per-instance unique string for the user, we return the hashed
+    combination of the user's email and registration date.
+    """
+
+    date_joined = str(user.date_joined.timestamp())
+
+    user_hash = hashlib.sha1("{user_email}-{date_joined}".format(
+        user_email=user.email,
+        date_joined=date_joined
+    ).encode())
+
+
+
+    return user_hash.hexdigest()

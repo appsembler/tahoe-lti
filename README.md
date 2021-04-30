@@ -27,6 +27,7 @@ EDXAPP_XBLOCK_SETTINGS:
 **Legal Notice:** Both ``basic_user_info`` and ``personal_user_info`` sends personal user information to potential 3rd-party LTI providers.
 Please make sure that this is reflected on the Privacy Policy of the site.
 
+In case the same LTI configuration used for multiple edX installations, alternatively you may want to replace `personal_user_info` processor by `combined_email_based_personal_user_info`. The `combined_email_based_personal_user_info` processor does exactly the same what `personal_user_info`, but using the hash of the user's email address and join date ensuring that the user can have the same email address across edX installations.
 
 Restart the Open edX instance and it should be working.
 
