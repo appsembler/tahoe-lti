@@ -35,10 +35,10 @@ class PersonalUserInfoProcessor(object):
         is unique per user per installation.
 
         To provide a per-instance unique string for the user, we return the hashed
-        combination of the user's email and registration date.
+        combination of the user's email and registration date.i
         """
 
-        date_joined = str(user.date_joined.timestamp())
+        date_joined = user.date_joined.isoformat()
 
         user_hash = hashlib.sha1("{user_email}-{date_joined}".format(
             user_email=user.email,

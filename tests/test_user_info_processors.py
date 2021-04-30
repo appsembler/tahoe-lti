@@ -64,7 +64,7 @@ def test_personal_user_info_combined_email_as_user_id(mock_get_xblock_user):
     info = combined_email_based_personal_user_info(xblock=None)
     assert info == {
         # sha1 hash hex digest of the email and join date combination
-        'custom_user_id': '18799c69ff91da68cdb901a9958ae38a7f79dceb',
+        'custom_user_id': 'fa0a961625f6d17bad8d4d1a239b2d4a83a812f0',
         'lis_person_name_full': 'Bob Robot',
         'lis_person_name_given': 'Bob',
         'lis_person_name_family': 'Robot',
