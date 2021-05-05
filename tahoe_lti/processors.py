@@ -21,31 +21,30 @@ class PersonalUserInfoProcessor(object):
         'custom_user_id': '',
     }
 
-    def __init__(self, use_combined_email_as_id=False):
+    def __init__(self, use_combined_id=False):
         super(PersonalUserInfoProcessor, self).__init__()
-        self.use_combined_email_as_id = use_combined_email_as_id
+        self.use_combined_id = use_combined_id
 
-    def __get_combined_user_email(self, user):
+    @staticmethod
+    def __get_combined_user_id(user):
         """
-        Compose a user identification string from user email and join date.
+        Compose a user identification string from user id and join date.
 
         In rare cases `user.id` cannot be used with LTI providers when the user id
         already exists on the provider side. To support scenarios like this, it is
         needed to have another way to generate a user identification string that
         is unique per user per installation.
 
-        To provide a per-instance unique string for the user, we return the hashed
-        combination of the user's email and registration date.i
+        To provide a per-instance unique string for the user, we return the
+        combination of the user's id and registration date.
         """
 
-        date_joined = user.date_joined.isoformat()
+        date_joined = user.date_joined.strftime("%y%m%d%H%M")
 
-        user_hash = hashlib.sha1("{user_email}-{date_joined}".format(
-            user_email=user.email,
+        return "{user_id}-{date_joined}".format(
+            user_id=user.id,
             date_joined=date_joined
-        ).encode())
-
-        return user_hash.hexdigest()
+        )
 
     def personal_user_info(self, xblock):
         """
@@ -53,10 +52,10 @@ class PersonalUserInfoProcessor(object):
         """
         user = get_xblock_user(xblock)
         if not user:
-            return
+            return {}
 
-        if self.use_combined_email_as_id:
-            user_id = self.__get_combined_user_email(user)
+        if self.use_combined_id:
+            user_id = self.__get_combined_user_id(user)
         else:
             user_id = str(user.id)
 
@@ -78,8 +77,8 @@ class PersonalUserInfoProcessor(object):
 
 
 personal_user_info = PersonalUserInfoProcessor().personal_user_info
-combined_email_based_personal_user_info = PersonalUserInfoProcessor(
-    use_combined_email_as_id=True
+personal_user_info_with_combined_user_id = PersonalUserInfoProcessor(
+    use_combined_id=True
 ).personal_user_info
 
 

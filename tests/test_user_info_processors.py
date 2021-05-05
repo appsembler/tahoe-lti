@@ -4,7 +4,7 @@ from mock import patch, Mock
 from tahoe_lti.processors import (
     basic_user_info,
     personal_user_info,
-    combined_email_based_personal_user_info,
+    personal_user_info_with_combined_user_id,
 )
 
 
@@ -46,9 +46,9 @@ def test_personal_user_info(mock_get_xblock_user):
 
 
 @patch('tahoe_lti.processors.get_xblock_user')
-def test_personal_user_info_combined_email_as_user_id(mock_get_xblock_user):
+def test_personal_user_info_combined_user_id(mock_get_xblock_user):
     """Happy scenario for personal_user_info"""
-    assert combined_email_based_personal_user_info.lti_xblock_default_params == {
+    assert personal_user_info_with_combined_user_id.lti_xblock_default_params == {
         'lis_person_name_full': '',
         'lis_person_name_given': '',
         'lis_person_name_family': '',
@@ -56,15 +56,15 @@ def test_personal_user_info_combined_email_as_user_id(mock_get_xblock_user):
     }
 
     mock_user = Mock()
+    mock_user.id = 123
     mock_user.profile.name = 'Bob Robot'
-    mock_user.email = 'bob.robot@example.com'
     mock_user.date_joined = datetime(1970, 1, 1, 1, 0)
     mock_get_xblock_user.return_value = mock_user
 
-    info = combined_email_based_personal_user_info(xblock=None)
+    info = personal_user_info_with_combined_user_id(xblock=None)
     assert info == {
         # sha1 hash hex digest of the email and join date combination
-        'custom_user_id': 'fa0a961625f6d17bad8d4d1a239b2d4a83a812f0',
+        'custom_user_id': '123-7001010100',
         'lis_person_name_full': 'Bob Robot',
         'lis_person_name_given': 'Bob',
         'lis_person_name_family': 'Robot',
