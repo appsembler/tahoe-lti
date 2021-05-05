@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
+- added alternative `custom_user_id` generation
+
 ### Changed
 ### Removed
 
@@ -25,6 +28,7 @@ release before changelog was added.
 
 release before changelog was added.
 
-[Unreleased]: https://github.com/appsembler/tahoe-lti/compare/release-0.2.0...HEAD
+[Unreleased]: https://github.com/appsembler/tahoe-lti/compare/release-0.3.0...HEAD
+[0.3.0]: https://github.com/appsembler/tahoe-lti/releases/compare/release-0.2.0..release-0.3.0
 [0.2.0]: https://github.com/appsembler/tahoe-lti/releases/compare/release-0.1.0..release-0.2.0
 [0.1.0]: https://github.com/appsembler/tahoe-lti/releases/tag/release-0.1.0
