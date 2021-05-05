@@ -3,7 +3,6 @@ Common LTI processors for Tahoe.
 """
 
 import json
-import hashlib
 from django.conf import settings
 
 from .xblock_helpers import get_xblock_user
