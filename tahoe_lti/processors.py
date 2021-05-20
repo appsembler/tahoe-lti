@@ -8,77 +8,73 @@ from django.conf import settings
 from .xblock_helpers import get_xblock_user
 
 
-class PersonalUserInfoProcessor(object):
+DEFAULT_PERSONAL_USER_INFO_PARAMS = {
+    'lis_person_name_full': '',
+    'lis_person_name_given': '',
+    'lis_person_name_family': '',
+    'custom_user_id': '',
+}
+
+
+def _get_personal_user_info_params(user):
+    """
+    Return the personal user info params for a user.
+    """
+    user_full_name = user.profile.name
+    names_list = user_full_name.split(' ', 1)
+
+    params = {
+        'lis_person_name_full': user_full_name,
+        'lis_person_name_given': names_list[0],
+        'custom_user_id': str(user.id),
+    }
+
+    if len(names_list) > 1:
+        params['lis_person_name_family'] = names_list[1]
+
+    return params
+
+
+def personal_user_info(xblock):
     """
     Provide additional standard LTI user personal information.
     """
+    user = get_xblock_user(xblock)
+    if not user:
+        return {}
 
-    DEFAULT_PARAMS = {
-        'lis_person_name_full': '',
-        'lis_person_name_given': '',
-        'lis_person_name_family': '',
-        'custom_user_id': '',
-    }
-
-    def __init__(self, use_combined_id=False):
-        super(PersonalUserInfoProcessor, self).__init__()
-        self.use_combined_id = use_combined_id
-
-    @staticmethod
-    def __get_combined_user_id(user):
-        """
-        Compose a user identification string from user id and join date.
-
-        In rare cases `user.id` cannot be used with LTI providers when the user id
-        already exists on the provider side. To support scenarios like this, it is
-        needed to have another way to generate a user identification string that
-        is unique per user per installation.
-
-        To provide a per-instance unique string for the user, we return the
-        combination of the user's id and registration date.
-        """
-
-        date_joined = user.date_joined.strftime("%y%m%d%H%M")
-
-        return "{user_id}-{date_joined}".format(
-            user_id=user.id,
-            date_joined=date_joined
-        )
-
-    def personal_user_info(self, xblock):
-        """
-        Provide additional standard LTI user personal information.
-        """
-        user = get_xblock_user(xblock)
-        if not user:
-            return {}
-
-        if self.use_combined_id:
-            user_id = self.__get_combined_user_id(user)
-        else:
-            user_id = str(user.id)
-
-        user_full_name = user.profile.name
-        names_list = user_full_name.split(' ', 1)
-
-        params = {
-            'lis_person_name_full': user_full_name,
-            'lis_person_name_given': names_list[0],
-            'custom_user_id': user_id,
-        }
-
-        if len(names_list) > 1:
-            params['lis_person_name_family'] = names_list[1]
-
-        return params
-
-    personal_user_info.lti_xblock_default_params = DEFAULT_PARAMS
+    return _get_personal_user_info_params(user)
 
 
-personal_user_info = PersonalUserInfoProcessor().personal_user_info
-personal_user_info_with_combined_user_id = PersonalUserInfoProcessor(
-    use_combined_id=True
-).personal_user_info
+personal_user_info.lti_xblock_default_params = DEFAULT_PERSONAL_USER_INFO_PARAMS
+
+
+def personal_user_info_with_combined_user_id(xblock):
+    """
+    Compose a user identification string from user id and join date.
+
+    In rare cases `user.id` cannot be used with LTI providers when the user id
+    already exists on the provider side. To support scenarios like this, it is
+    needed to have another way to generate a user identification string that
+    is unique per user per installation.
+
+    To provide a per-instance unique string for the user, we return the
+    combination of the user's id and registration date.
+    """
+    user = get_xblock_user(xblock)
+    if not user:
+        return {}
+
+    params = _get_personal_user_info_params(user)
+    params['custom_user_id'] = "{user_id}-{date_joined}".format(
+        user_id=user.id,
+        date_joined=user.date_joined.strftime("%y%m%d%H%M")
+    )
+
+    return params
+
+
+personal_user_info_with_combined_user_id.lti_xblock_default_params = DEFAULT_PERSONAL_USER_INFO_PARAMS
 
 
 def basic_user_info(xblock):
