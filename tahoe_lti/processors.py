@@ -8,7 +8,7 @@ from django.conf import settings
 from .xblock_helpers import get_xblock_user
 
 
-DEFAULT_PERSONAL_USER_INFO_PARAMS = {
+DEFAULT_USER_INFO_PARAMS = {
     'lis_person_name_full': '',
     'lis_person_name_given': '',
     'lis_person_name_family': '',
@@ -46,7 +46,7 @@ def personal_user_info(xblock):
     return _get_personal_user_info_params(user)
 
 
-personal_user_info.lti_xblock_default_params = DEFAULT_PERSONAL_USER_INFO_PARAMS
+personal_user_info.lti_xblock_default_params = DEFAULT_USER_INFO_PARAMS
 
 
 def personal_user_info_with_combined_user_id(xblock):
@@ -74,7 +74,7 @@ def personal_user_info_with_combined_user_id(xblock):
     return params
 
 
-personal_user_info_with_combined_user_id.lti_xblock_default_params = DEFAULT_PERSONAL_USER_INFO_PARAMS
+personal_user_info_with_combined_user_id.lti_xblock_default_params = DEFAULT_USER_INFO_PARAMS
 
 
 def basic_user_info(xblock):
