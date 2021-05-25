@@ -94,6 +94,7 @@ def basic_user_info(xblock):
             'lis_person_sourcedid': user.username,
             'lis_person_contact_email_primary': user.email,
         }
+    return {}
 
 
 def cohort_info(xblock):
