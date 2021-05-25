@@ -8,6 +8,75 @@ from django.conf import settings
 from .xblock_helpers import get_xblock_user
 
 
+DEFAULT_USER_INFO_PARAMS = {
+    'lis_person_name_full': '',
+    'lis_person_name_given': '',
+    'lis_person_name_family': '',
+    'custom_user_id': '',
+}
+
+
+def _get_personal_user_info_params(user):
+    """
+    Return the personal user info params for a user.
+    """
+    user_full_name = user.profile.name
+    names_list = user_full_name.split(' ', 1)
+
+    params = {
+        'lis_person_name_full': user_full_name,
+        'lis_person_name_given': names_list[0],
+        'custom_user_id': str(user.id),
+    }
+
+    if len(names_list) > 1:
+        params['lis_person_name_family'] = names_list[1]
+
+    return params
+
+
+def personal_user_info(xblock):
+    """
+    Provide additional standard LTI user personal information.
+    """
+    user = get_xblock_user(xblock)
+    if not user:
+        return {}
+
+    return _get_personal_user_info_params(user)
+
+
+personal_user_info.lti_xblock_default_params = DEFAULT_USER_INFO_PARAMS
+
+
+def personal_user_info_with_combined_user_id(xblock):
+    """
+    Compose a user identification string from user id and join date.
+
+    In rare cases `user.id` cannot be used with LTI providers when the user id
+    already exists on the provider side. To support scenarios like this, it is
+    needed to have another way to generate a user identification string that
+    is unique per user per installation.
+
+    To provide a per-instance unique string for the user, we return the
+    combination of the user's id and registration date.
+    """
+    user = get_xblock_user(xblock)
+    if not user:
+        return {}
+
+    params = _get_personal_user_info_params(user)
+    params['custom_user_id'] = "{user_id}-{date_joined}".format(
+        user_id=user.id,
+        date_joined=user.date_joined.strftime("%y%m%d%H%M")
+    )
+
+    return params
+
+
+personal_user_info_with_combined_user_id.lti_xblock_default_params = DEFAULT_USER_INFO_PARAMS
+
+
 def basic_user_info(xblock):
     """
     Send basic user information without asking for explicit consent.
@@ -25,37 +94,7 @@ def basic_user_info(xblock):
             'lis_person_sourcedid': user.username,
             'lis_person_contact_email_primary': user.email,
         }
-
-
-def personal_user_info(xblock):
-    """
-    Provide additional standard LTI user personal information.
-    """
-    user = get_xblock_user(xblock)
-    if not user:
-        return
-
-    user_full_name = user.profile.name
-    names_list = user_full_name.split(' ', 1)
-
-    params = {
-        'lis_person_name_full': user_full_name,
-        'lis_person_name_given': names_list[0],
-        'custom_user_id': str(user.id or ''),
-    }
-
-    if len(names_list) > 1:
-        params['lis_person_name_family'] = names_list[1]
-
-    return params
-
-
-personal_user_info.lti_xblock_default_params = {
-    'lis_person_name_full': '',
-    'lis_person_name_given': '',
-    'lis_person_name_family': '',
-    'custom_user_id': '',
-}
+    return {}
 
 
 def cohort_info(xblock):
