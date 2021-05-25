@@ -7,11 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-
-- added alternative `custom_user_id` generation
-
 ### Changed
 ### Removed
+
+## [0.4.0] - 2021-05-25
+### Added
+- added alternative `custom_user_id` generation
 
 ## [0.3.0] - 2021-01-04
 ### Added
