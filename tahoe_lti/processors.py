@@ -96,6 +96,15 @@ def basic_user_info(xblock):
         }
     return {}
 
+def user_email_verification_info(xblock):
+    user = get_xblock_user(xblock)
+
+    if user:
+        return {
+            'custom_is_user_email_verified': "true" if user.is_active else "false",
+        }
+    return {}
+
 
 def cohort_info(xblock):
     """
