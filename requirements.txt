@@ -1,5 +1,5 @@
 edx-opaque-keys==2.1.1
-django-pyfs==2.2
+django-pyfs==3.2.0
 mock==3.0.5
 
 pytest==4.6.11; python_version < '3'
@@ -16,4 +16,4 @@ pytest-django==4.1.0; python_version >= '3'
 XBlock==1.2.1; python_version < '3'
 XBlock==1.4.0; python_version >= '3'
 
-xblock-sdk==0.2.2
+xblock-sdk==0.5.1
